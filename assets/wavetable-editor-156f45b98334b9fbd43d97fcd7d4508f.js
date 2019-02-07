@@ -15,7 +15,7 @@ var i=this.buildMessage(n)
 return i},sendSysex:function(e){if(!this.peak.notConnected){var t=this.peak.output
 t&&t.send(e)}},downloadSysex:function(e){var t=new Blob([e])
 return(0,o.default)(t,"wavetable.syx")},buildMessage:function(e){var t=this.peak.productId
-if(t&&!(t.length<2)){return new Uint8Array([240,0,32,41,1,16,t[0],t[1],a,0,0,0,0].concat(e,[247]))}},didInsertElement:function(){var e=this
+if(t&&!(t.length<2)){return new Uint8Array([240,0,32,41,1,16,t[0],t[1],a,0,0,0,0,0,0,0].concat(e,[247]))}},didInsertElement:function(){var e=this
 this._super.apply(this,arguments)
 var o=[],a=new n.default("wave-draw"),s=document.getElementById("wave-draw-instruction")
 a.onDrawingStart.push(function(){return s.classList.add("hidden")}),o.push(a)
@@ -28,7 +28,9 @@ var d=new t.default(o)
 d.start(),this.set("conductor",d)},actions:{playSound:function(){this.playSound()},sendSysex:function(){var e=this.generateSyx()
 this.sendSysex(e)},downloadSysex:function(){var e=this.generateSyx()
 this.downloadSysex(e)}}})
-e.default=s}),define("wavetable-editor/components/waveform-display",["exports","wavetable-editor/components/canvas-display"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
+e.default=s}),define("wavetable-editor/components/wave-thumb",["exports"],function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
+var t=Ember.Component.extend({})
+e.default=t}),define("wavetable-editor/components/waveform-display",["exports","wavetable-editor/components/canvas-display"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var n=t.default.extend({init:function(){this._super.apply(this,arguments),this.setProperties({animAmt:0,wavePoints:[],partialWave:[],fourierPoints:[],onFourierChange:[],waveTop:0,waveBottom:0,totalHeight:0,fadeFrequencies:!0,splitAnim:!0,fourierAmt:1})},setPath:function(){}})
 e.default=n}),define("wavetable-editor/components/waveform-editor",["exports","wavetable-editor/components/canvas-display"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var n="#e91e63"
@@ -166,10 +168,10 @@ n.push(e(r))}return n},e.normaliseWave=function(e){var i=Math.min.apply(Math,n(e
 return e.map(function(e){return(0,t.slurp)(-1,1,(e-i)/(r-i))})},e.getWaveFunction=function(e){return function(n){(n%=1)<0&&n++
 var i=Math.floor(e.length*n),r=(i+1)%e.length,o=e.length*n%1
 return(0,t.slurp)(e[i],e[r],o)}},e.squareWave=function(e){return e<.5?-1:1},e.renderWave=function(e){for(var t=e.context,n=e.wave,i=e.width,r=e.yPosition,o=void 0===r?0:r,a=e.yMultiple,s=e.startXAmt,u=void 0===s?0:s,l=e.type,d=void 0===l?"wave":l,c=1/n.length,f=u,h=0;f<=1+c;f+=c,h++){var p=h%n.length,v=i*f,m=o+a*n[p]
-"wave"==d?0==h?t.moveTo(v,m):t.lineTo(v,m):"samples"==d&&(t.beginPath(),t.arc(v,m,2,0,2*Math.PI),t.fill())}}}),define("wavetable-editor/resolver",["exports","ember-resolver"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
+"wave"==d?0==h?t.moveTo(v,m):t.lineTo(v,m):"samples"==d&&(t.beginPath(),t.arc(v,m,2,0,2*Math.PI),t.fill())}}})
+define("wavetable-editor/resolver",["exports","ember-resolver"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var n=t.default
-e.default=n})
-define("wavetable-editor/router",["exports","wavetable-editor/config/environment"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
+e.default=n}),define("wavetable-editor/router",["exports","wavetable-editor/config/environment"],function(e,t){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var n=Ember.Router.extend({location:t.default.locationType,rootURL:t.default.rootURL})
 n.map(function(){})
 var i=n
@@ -201,9 +203,7 @@ i&&2===i.length&&240===t[0]&&(0,n.default)([0,32,41,0,124,i[0],i[1],64],t.slice(
 if(240===t[0]){if(!(0,n.default)([126,127,6,2,0,32,41,126,0,0,0],e.data.slice(1,12))&&!(0,n.default)([126,0,6,2,0,32,41,126,16,0,0],e.data.slice(1,12)))return
 this.set("firmwareVersion",this.versionFromBytes(t.slice(12,16)))
 var i=this.get("status")
-"present"===i?(this.get("mainInput").removeEventListener("midimessage",this.handleVersionMessage.bind(this)),this.updateFPGAVersion()):"bootloader"===i&&this.get("input").removeEventListener("midimessage",this.handleVersionMessage.bind(this))}},updateFPGAVersion:function(){"present"===this.get("status")&&(this.get("mainInput").addEventListener("midimessage",this.handleFPGAVersionMessage.bind(this)),this.get("mainOutput").send([240,0,32,41,0,124,0,126,68,0,0,0,0,0,0,247]))},updateVersion:function(){if("present"===this.get("status"))this.get("mainInput").addEventListener("midimessage",this.handleVersionMessage.bind(this)),this.get("mainOutput").send([240,126,127,6,1,247])
-else{if("bootloader"!==this.get("status"))return void this.set("firmwareVersion",void 0)
-this.get("input").addEventListener("midimessage",this.handleVersionMessage.bind(this)),this.get("output").send([240,126,127,6,1,247])}}})
+"present"===i?(this.get("mainInput").removeEventListener("midimessage",this.handleVersionMessage.bind(this)),this.updateFPGAVersion()):"bootloader"===i&&this.get("input").removeEventListener("midimessage",this.handleVersionMessage.bind(this))}},updateFPGAVersion:function(){"present"===this.get("status")&&(this.get("mainInput").addEventListener("midimessage",this.handleFPGAVersionMessage.bind(this)),this.get("mainOutput").send([240,0,32,41,0,124,0,126,68,0,0,0,0,0,0,247]))},updateVersion:function(){}})
 e.default=i}),define("wavetable-editor/services/midi-device",["exports"],function(e){function t(e){return(t="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e})(e)}Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var n=Ember.Service.extend({peak:Ember.inject.service("devices.peak"),init:function(){var e=this
 this._super.apply(this,arguments),this.onstatechange=this.onstatechange.bind(this),navigator&&void 0!==navigator.requestMIDIAccess?navigator.requestMIDIAccess({sysex:!0}).then(function(t){return e.midiSuccess(t)},function(t){return e.midiError(t)}):this.midiError("It looks like this browser does not support MIDI communications.")},midiSuccess:function(e){e.onstatechange=this.onstatechange,this.updateMidiPorts(e)},midiError:function(e){"object"===t(e)&&"SecurityError"===e.name?this.set("midiErrorMessage","You must allow Full MIDI access, otherwise this whole thing won't work..."):this.set("midiErrorMessage",e),this.get("reject")&&this.get("reject")(this.get("midiErrorMessage"))},onstatechange:function(e){this.peak.updateMidiPort(e.port)},updateMidiPorts:function(e){var t=this
@@ -225,6 +225,8 @@ e.default=t}),define("wavetable-editor/templates/components/canvas-display",["ex
 var t=Ember.HTMLBars.template({id:"nncMPlP8",block:'{"symbols":["&default"],"statements":[[14,1]],"hasEval":false}',meta:{moduleName:"wavetable-editor/templates/components/canvas-display.hbs"}})
 e.default=t}),define("wavetable-editor/templates/components/wave-draw",["exports"],function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var t=Ember.HTMLBars.template({id:"xlvYbAxW",block:'{"symbols":[],"statements":[[7,"div"],[11,"class","controls"],[9],[0,"\\n  "],[7,"input"],[11,"id","wave-draw-slider"],[11,"min","0"],[11,"max","1"],[11,"value","1"],[11,"step","any"],[11,"type","range"],[9],[10],[0,"\\n  "],[7,"button"],[11,"id","wave-draw-button"],[11,"class","button"],[9],[0,"Play Wave"],[3,"action",[[22,0,[]],"playSound"]],[10],[0,"\\n\\n  "],[7,"button"],[12,"disabled",[21,"disableSendButton"]],[9],[0,"Send Sysex"],[3,"action",[[22,0,[]],"sendSysex"]],[10],[0,"\\n  "],[7,"button"],[12,"disabled",[21,"disableDownloadButton"]],[9],[0,"Download Sysex"],[3,"action",[[22,0,[]],"downloadSysex"]],[10],[0,"\\n"],[10],[0,"\\n\\n"],[7,"div"],[11,"class","container"],[9],[0,"\\n  "],[7,"div"],[9],[0,"\\n    "],[7,"canvas"],[11,"id","wave-draw"],[11,"class","sketch-child"],[11,"width","500"],[11,"height","300"],[9],[10],[0,"\\n    "],[7,"p"],[11,"id","wave-draw-instruction"],[11,"class","instruction wave-instruction"],[9],[0,"Draw here!"],[10],[0,"\\n  "],[10],[0,"\\n  "],[7,"div"],[9],[0,"\\n    "],[7,"canvas"],[11,"id","wave-draw-split"],[11,"class","sketch"],[11,"width","500"],[11,"height","500"],[9],[10],[0,"\\n  "],[10],[0,"\\n"],[10],[0,"\\n"]],"hasEval":false}',meta:{moduleName:"wavetable-editor/templates/components/wave-draw.hbs"}})
+e.default=t}),define("wavetable-editor/templates/components/wave-thumb",["exports"],function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
+var t=Ember.HTMLBars.template({id:"4SFvWnGS",block:'{"symbols":["&default"],"statements":[[14,1]],"hasEval":false}',meta:{moduleName:"wavetable-editor/templates/components/wave-thumb.hbs"}})
 e.default=t}),define("wavetable-editor/templates/components/waveform-display",["exports"],function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0
 var t=Ember.HTMLBars.template({id:"iwBiHxH+",block:'{"symbols":["&default"],"statements":[[14,1]],"hasEval":false}',meta:{moduleName:"wavetable-editor/templates/components/waveform-display.hbs"}})
 e.default=t}),define("wavetable-editor/templates/components/waveform-editor",["exports"],function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0

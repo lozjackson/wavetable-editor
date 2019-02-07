@@ -12,7 +12,7 @@ this.synth.playSoundWave(e)},generateSyx:function(){var e=this.fourierData,t=e.s
 t.forEach(function(e){var t=127&e,i=e>>7
 n.push(t,i)})
 var i=this.buildMessage(n)
-return i},sendSysex:function(e){if(!this.peak.notConnected){var t=this.peak.output
+return i},sendSysex:function(e){if(!this.peak.notConnected){var t=this.peak.mainOutput
 t&&t.send(e)}},downloadSysex:function(e){var t=new Blob([e])
 return(0,o.default)(t,"wavetable.syx")},buildMessage:function(e){var t=this.peak.productId
 if(t&&!(t.length<2)){return new Uint8Array([240,0,32,41,1,16,t[0],t[1],a,0,0,0,0,0,0,0].concat(e,[247]))}},didInsertElement:function(){var e=this
